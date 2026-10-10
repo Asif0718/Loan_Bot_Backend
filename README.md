@@ -28,7 +28,18 @@ cp .env.example .env
 
 Edit `.env` with your Retell API key, Agent ID, and MongoDB connection details.
 
-### 4. MongoDB setup
+### 4. Sync the assignment prompt to Retell
+
+The complete, version-controlled agent prompt is in `app/prompts/lap_agent.txt`.
+After setting `RETELL_API_KEY`, `RETELL_AGENT_ID`, and optionally
+`PUBLIC_BASE_URL`, apply the prompt, webhook events, and post-call extraction
+fields to the Retell agent:
+
+```powershell
+python scripts/sync_retell_agent.py
+```
+
+### 5. MongoDB setup
 
 Ensure MongoDB is running and accessible via the `MONGODB_URI` environment variable.
 The default database name is `home_credit_lap`.
@@ -117,7 +128,7 @@ backend/
 
 ## Assumptions
 
-- The Retell agent is already configured with the desired system prompt, voice, and post-call extraction settings
+- Run `python scripts/sync_retell_agent.py` after prompt/configuration changes
 - The Retell Python SDK is used for all Retell API interactions
 - MongoDB is accessible and the `calls` collection will be created automatically
 - Webhook events may be retried, so idempotency is enforced via a unique MongoDB index on `retell_call_id`

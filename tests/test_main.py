@@ -149,6 +149,61 @@ class TestCallStart:
         assert resp.status_code == 502
         assert "stack" not in resp.text.lower()
 
+    def test_retell_call_receives_assignment_variables(self):
+        """Every prompt variable required by the assignment is supplied."""
+        from app.services.retell_service import create_web_call
+
+        response = SimpleNamespace(
+            call_id="call-variables",
+            access_token="token",
+            transport="gateway",
+            ice_servers=None,
+        )
+        with patch(
+            "app.services.retell_service.call_resource.create_web_call",
+            return_value=response,
+        ) as create:
+            create_web_call(
+                customer_name="Rahul Sharma",
+                language_to_speak="English",
+                agent_name="Ananya",
+                profile_id="profile-1",
+            )
+
+        variables = create.call_args.kwargs["retell_llm_dynamic_variables"]
+        assert {
+            "company_name",
+            "customer_name",
+            "agent_name",
+            "agent_gender",
+            "current_date",
+            "current_day",
+            "current_time",
+            "additional_context_from_rag",
+            "language_to_speak",
+            "conversation_history",
+            "customer_utterance",
+        } <= variables.keys()
+
+
+def test_assignment_prompt_contains_critical_rules():
+    prompt = (
+        __import__("pathlib").Path(__file__).parents[1]
+        / "app"
+        / "prompts"
+        / "lap_agent.txt"
+    ).read_text(encoding="utf-8")
+
+    for requirement in (
+        "Agricultural property is an immediate disqualification",
+        "Cash income is an immediate disqualification",
+        "3 through 15 years inclusive",
+        "first missing checklist item",
+        "loan-transfer specialist",
+        "Never call the customer qualified until all seven",
+    ):
+        assert requirement in prompt
+
 
 class TestCallHistory:
     def test_get_calls_empty(self):

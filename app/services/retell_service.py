@@ -1,10 +1,19 @@
+from datetime import datetime, timedelta, timezone
+
 from retell import Retell
 from retell.resources.call import CallResource, CreateWebCallResponse
-from app.config import RETELL_API_KEY, RETELL_AGENT_ID
+from app.config import (
+    ADDITIONAL_CONTEXT_FROM_RAG,
+    AGENT_GENDER,
+    COMPANY_NAME,
+    RETELL_API_KEY,
+    RETELL_AGENT_ID,
+)
 
 
 retell_client = Retell(api_key=RETELL_API_KEY)
 call_resource = CallResource(retell_client)
+INDIA_TIMEZONE = timezone(timedelta(hours=5, minutes=30))
 
 
 def get_call(call_id: str) -> dict:
@@ -22,11 +31,20 @@ def create_web_call(
     metadata: dict | None = None,
 ) -> dict:
     """Create a new Retell web call with dynamic variables."""
+    now = datetime.now(INDIA_TIMEZONE)
     variables = {
         **(dynamic_variables or {}),
+        "company_name": COMPANY_NAME,
         "customer_name": customer_name,
-        "language_to_speak": language_to_speak,
         "agent_name": agent_name,
+        "agent_gender": AGENT_GENDER,
+        "current_date": now.strftime("%d %B %Y"),
+        "current_day": now.strftime("%A"),
+        "current_time": now.strftime("%I:%M %p"),
+        "additional_context_from_rag": ADDITIONAL_CONTEXT_FROM_RAG,
+        "language_to_speak": language_to_speak,
+        "conversation_history": "",
+        "customer_utterance": "",
     }
 
     response: CreateWebCallResponse = call_resource.create_web_call(
