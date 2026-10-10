@@ -14,4 +14,7 @@ MONGODB_DB_NAME = os.getenv("MONGODB_DB_NAME", "home_credit_lap")
 VERIFY_RETELL_WEBHOOKS = os.getenv("VERIFY_RETELL_WEBHOOKS", "true").lower() == "true"
 
 # CORS settings - configurable for local development
-ALLOWED_ORIGINS = os.getenv("ALLOWED_ORIGINS", "http://localhost:3000").split(",")
+ALLOWED_ORIGINS = os.getenv(
+    "ALLOWED_ORIGINS",
+    "http://localhost:3000,https://loan-bot-frontend.vercel.app"
+).split(",")
