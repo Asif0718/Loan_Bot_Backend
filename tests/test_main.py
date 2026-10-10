@@ -102,6 +102,10 @@ class TestHealth:
         assert resp.status_code == 200
         assert resp.json() == {"status": "ok"}
 
+    def test_health_endpoint_accepts_head(self):
+        resp = client.head("/health")
+        assert resp.status_code == 200
+
 
 class TestCallStart:
     def test_start_call_missing_fields(self):
