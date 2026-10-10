@@ -47,9 +47,3 @@ app.include_router(health_router)
 app.include_router(calls_router)
 app.include_router(webhooks_router)
 app.include_router(profiles_router)
-
-
-@app.get("/health", include_in_schema=False)
-async def health_check():
-    """Health check endpoint."""
-    return {"status": "ok"}

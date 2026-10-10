@@ -1,5 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, status
-from app.database import check_mongodb_connection, close_db_connection
+from fastapi import APIRouter
 
 router = APIRouter(prefix="/health", tags=["health"])
 
